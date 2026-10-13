@@ -1,0 +1,191 @@
+{
+  "agent": "codex",
+  "model": "gpt-6.1-sol",
+  "day": "2026-10-06",
+  "engine": "4.7.2.stable.mono.official.ed1daf0bf",
+  "tasks": 15,
+  "firstTry": 15,
+  "afterOneFix": 15,
+  "results": [
+    {
+      "task": "move",
+      "title": "Move a CharacterBody2D with an input action",
+      "first": {
+        "seconds": 8,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends CharacterBody2D\n\nfunc _physics_process(_delta: float) -> void:\n\tvelocity = Vector2(200.0, 0.0) if Input.is_action_pressed(\"ui_right\") else Vector2.ZERO\n\tmove_and_slide()\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "gravity",
+      "title": "Fall with gravity and land on the floor",
+      "first": {
+        "seconds": 8,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends CharacterBody2D\n\nconst GRAVITY: float = 980.0\n\nfunc _physics_process(delta: float) -> void:\n\tif is_on_floor():\n\t\tvelocity.y = 0.0\n\telse:\n\t\tvelocity.y += GRAVITY * delta\n\tmove_and_slide()\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "score-label",
+      "title": "A score label",
+      "first": {
+        "seconds": 9,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Label\n\nvar score: int = 0\n\nfunc _ready() -> void:\n\ttext = \"Score: %d\" % score\n\nfunc add(points: int) -> void:\n\tscore += points\n\ttext = \"Score: %d\" % score\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "save-load",
+      "title": "Save and load a dictionary as JSON",
+      "first": {
+        "seconds": 12,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends RefCounted\n\n\nstatic func save_data(data: Dictionary, path: String) -> void:\n\tvar file := FileAccess.open(path, FileAccess.WRITE)\n\tif file == null:\n\t\tpush_error(\"Failed to open file for saving: %s\" % path)\n\t\treturn\n\tfile.store_string(JSON.stringify(data))\n\tfile.close()\n\n\nstatic func load_data(path: String) -> Dictionary:\n\tvar file := FileAccess.open(path, FileAccess.READ)\n\tif file == null:\n\t\tpush_error(\"Failed to open file for loading: %s\" % path)\n\t\treturn {}\n\tvar contents := file.get_as_text()\n\tfile.close()\n\tvar json := JSON.new()\n\tif json.parse(contents) != OK:\n\t\tpush_error(\"Failed to parse JSON in file: %s\" % path)\n\t\treturn {}\n\tif not (json.data is Dictionary):\n\t\tpush_error(\"JSON in file is not a Dictionary: %s\" % path)\n\t\treturn {}\n\treturn json.data\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "health-signals",
+      "title": "Health with signals",
+      "first": {
+        "seconds": 10,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Node\n\nsignal health_changed(old_value: int, new_value: int)\nsignal died\n\nvar health: int = 100\nvar _has_died: bool = false\n\nfunc take_damage(amount: int) -> void:\n\tvar old_value: int = health\n\thealth = maxi(0, health - maxi(0, amount))\n\tif health != old_value:\n\t\thealth_changed.emit(old_value, health)\n\t\tif health == 0 and not _has_died:\n\t\t\t_has_died = true\n\t\t\tdied.emit()\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "fade-tween",
+      "title": "Fade out with a tween",
+      "first": {
+        "seconds": 9,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Node2D\n\nsignal faded\n\n\nfunc fade_out(duration: float) -> void:\n\tmodulate.a = 1.0\n\tvar tween := create_tween()\n\ttween.tween_property(self, \"modulate:a\", 0.0, duration)\n\ttween.finished.connect(func() -> void: faded.emit())\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "spawn-timer",
+      "title": "Spawn on a timer, then stop",
+      "first": {
+        "seconds": 23,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Node\n\nvar spawned_count: int = 0\nvar spawn_timer: Timer\n\n\nfunc _ready() -> void:\n\tspawn_timer = Timer.new()\n\tspawn_timer.wait_time = 0.25\n\tspawn_timer.timeout.connect(_on_spawn_timer_timeout)\n\tadd_child(spawn_timer)\n\tspawn_timer.start()\n\n\nfunc _on_spawn_timer_timeout() -> void:\n\tadd_child(Node2D.new())\n\tspawned_count += 1\n\tif spawned_count >= 4:\n\t\tspawn_timer.stop()\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "door-states",
+      "title": "A door with states",
+      "first": {
+        "seconds": 10,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Node\n\nenum State { CLOSED, OPENING, OPEN }\n\nvar state: State = State.CLOSED\n\n\nfunc interact() -> void:\n\tif state != State.CLOSED:\n\t\treturn\n\tstate = State.OPENING\n\tawait get_tree().create_timer(0.5, false).timeout\n\tstate = State.OPEN\n\n\nfunc get_state_name() -> String:\n\tmatch state:\n\t\tState.CLOSED:\n\t\t\treturn \"CLOSED\"\n\t\tState.OPENING:\n\t\t\treturn \"OPENING\"\n\t\tState.OPEN:\n\t\t\treturn \"OPEN\"\n\treturn \"CLOSED\"\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "inventory",
+      "title": "An inventory with counts",
+      "first": {
+        "seconds": 10,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends RefCounted\n\nvar _items: Dictionary = {}\n\n\nfunc add_item(item_name: String, count: int) -> void:\n\tif count > 0:\n\t\t_items[item_name] = get_count(item_name) + count\n\n\nfunc remove_item(item_name: String, count: int) -> bool:\n\tif count < 0 or get_count(item_name) < count:\n\t\treturn false\n\tif count > 0:\n\t\t_items[item_name] = get_count(item_name) - count\n\treturn true\n\n\nfunc get_count(item_name: String) -> int:\n\treturn int(_items.get(item_name, 0))\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "load-level",
+      "title": "Load a level scene from a path",
+      "first": {
+        "seconds": 7,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS\nWARNING: 2 RIDs of type \"CanvasItem\" were leaked.\n   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2735)\nWARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).\n   at: cleanup (core/object/object.cpp:2536)",
+        "code": "extends Node\n\n\nfunc load_level(path: String) -> Node:\n\tvar scene: PackedScene = load(path)\n\tvar instance: Node = scene.instantiate()\n\tadd_child(instance)\n\treturn instance\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "tilemap-layer",
+      "title": "Paint cells on a TileMapLayer",
+      "first": {
+        "seconds": 9,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends TileMapLayer\n\n\nfunc paint_row(y: int, from_x: int, to_x: int) -> void:\n\tfor x in range(from_x, to_x + 1):\n\t\tset_cell(Vector2i(x, y), 0, Vector2i(0, 0))\n\n\nfunc is_painted(cell: Vector2i) -> bool:\n\treturn get_cell_source_id(cell) != -1\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "ray-query",
+      "title": "Cast a physics ray",
+      "first": {
+        "seconds": 10,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Node2D\n\n\nfunc first_hit(from: Vector2, to: Vector2) -> Vector2:\n\tvar query := PhysicsRayQueryParameters2D.create(from, to)\n\tvar hit := get_world_2d().direct_space_state.intersect_ray(query)\n\tif hit.is_empty():\n\t\treturn to\n\treturn hit[\"position\"]\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "grid-path",
+      "title": "A path on a grid around walls",
+      "first": {
+        "seconds": 14,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends RefCounted\n\n\nfunc find_path(size: Vector2i, walls: Array[Vector2i], from: Vector2i, to: Vector2i) -> Array[Vector2i]:\n\tvar path: Array[Vector2i] = []\n\tif size.x <= 0 or size.y <= 0:\n\t\treturn path\n\tif not _in_bounds(from, size) or not _in_bounds(to, size):\n\t\treturn path\n\n\tvar blocked: Dictionary = {}\n\tfor wall in walls:\n\t\tblocked[wall] = true\n\tif blocked.has(from) or blocked.has(to):\n\t\treturn path\n\n\tvar queue: Array[Vector2i] = [from]\n\tvar parents: Dictionary = {from: from}\n\tvar head: int = 0\n\tvar directions: Array[Vector2i] = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]\n\twhile head < queue.size():\n\t\tvar cell: Vector2i = queue[head]\n\t\thead += 1\n\t\tif cell == to:\n\t\t\tvar cursor: Vector2i = to\n\t\t\twhile cursor != from:\n\t\t\t\tpath.append(cursor)\n\t\t\t\tcursor = parents[cursor]\n\t\t\tpath.append(from)\n\t\t\tpath.reverse()\n\t\t\treturn path\n\t\tfor direction in directions:\n\t\t\tvar neighbor: Vector2i = cell + direction\n\t\t\tif not _in_bounds(neighbor, size) or blocked.has(neighbor) or parents.has(neighbor):\n\t\t\t\tcontinue\n\t\t\tparents[neighbor] = cell\n\t\t\tqueue.append(neighbor)\n\treturn path\n\n\nfunc _in_bounds(cell: Vector2i, size: Vector2i) -> bool:\n\treturn cell.x >= 0 and cell.y >= 0 and cell.x < size.x and cell.y < size.y\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "animation-code",
+      "title": "Build and play an animation in code",
+      "first": {
+        "seconds": 10,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Node2D\n\n\nfunc _ready() -> void:\n\tvar player := AnimationPlayer.new()\n\tadd_child(player)\n\tplayer.root_node = NodePath(\"..\")\n\n\tvar animation := Animation.new()\n\tanimation.length = 1.0\n\tanimation.loop_mode = Animation.LOOP_LINEAR\n\tvar track := animation.add_track(Animation.TYPE_VALUE)\n\tanimation.track_set_path(track, NodePath(\".:visible\"))\n\tanimation.value_track_set_update_mode(track, Animation.UPDATE_DISCRETE)\n\tanimation.track_insert_key(track, 0.0, true)\n\tanimation.track_insert_key(track, 0.5, false)\n\n\tvar library := AnimationLibrary.new()\n\tlibrary.add_animation(\"blink\", animation)\n\tplayer.add_animation_library(\"\", library)\n\tvisible = true\n\tplayer.play(\"blink\")\n"
+      },
+      "fix": null
+    },
+    {
+      "task": "signal-or-timeout",
+      "title": "Wait for a signal or a timeout",
+      "first": {
+        "seconds": 12,
+        "pass": true,
+        "problem": "",
+        "output": "Godot Engine v4.7.2.stable.mono.official.ed1daf0bf - https://godotengine.org\n\nBENCH PASS",
+        "code": "extends Node\n\n\nclass WaitRace:\n\textends RefCounted\n\tsignal finished(signal_won: bool)\n\tvar settled := false\n\n\tfunc settle(signal_won: bool) -> void:\n\t\tif settled:\n\t\t\treturn\n\t\tsettled = true\n\t\tfinished.emit(signal_won)\n\n\nfunc wait_for(sig: Signal, seconds: float) -> bool:\n\tvar race := WaitRace.new()\n\tvar on_signal := func() -> void: race.settle(true)\n\tvar on_timeout := func() -> void: race.settle(false)\n\tvar timer := get_tree().create_timer(maxf(seconds, 0.0), false)\n\tsig.connect(on_signal, CONNECT_ONE_SHOT)\n\ttimer.timeout.connect(on_timeout, CONNECT_ONE_SHOT)\n\tvar signal_won: bool = await race.finished\n\tif sig.is_connected(on_signal):\n\t\tsig.disconnect(on_signal)\n\tif timer.timeout.is_connected(on_timeout):\n\t\ttimer.timeout.disconnect(on_timeout)\n\treturn signal_won\n"
+      },
+      "fix": null
+    }
+  ]
+}

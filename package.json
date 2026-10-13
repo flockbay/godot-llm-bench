@@ -1,0 +1,14 @@
+{
+  "name": "godot-llm-bench",
+  "version": "1.0.0",
+  "description": "Fifteen Godot 4 GDScript tasks, each judged by running it headless on the official engine, to measure which AI models write working Godot code.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Flockbay (https://flockbay.com)",
+  "homepage": "https://flockbay.com/blog/best-llm-for-godot/",
+  "keywords": ["godot", "godot4", "gdscript", "llm", "benchmark", "ai", "claude", "codex", "game-development"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "validate": "node bench.mjs validate"
+  }
+}
