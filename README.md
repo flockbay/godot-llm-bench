@@ -29,6 +29,10 @@ Godot's output once, and did not fix `signal-or-timeout`. Every result file in
 the time taken. Seconds are the agent's wall-clock time, start-up included.
 
 Three models at 15 of 15 says these tasks are now the floor, not the ceiling.
+
+## The same tasks across 28 models
+
+The same 15 tasks were then run across 28 models, through coding agents and straight through each provider's API. Twelve passed all 15 on the first try, among them three of the five cheapest hosted models measured. Every model's row is at https://flockbay.com/blog/best-ai-for-godot/.
 Longer game-level head-to-heads (a physics truck, the door problem, a
 six-legged walker, save and load, a rigged character) and which model to pick
 for which job are in the write-up:
