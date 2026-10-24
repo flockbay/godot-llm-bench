@@ -98,3 +98,8 @@ answer that passes `validate`.
 
 Made by [Flockbay](https://flockbay.com), a free AI game maker built on Godot,
 to measure the models its users bring. MIT licensed.
+
+## Related
+
+- [The best Godot MCP server, compared](https://flockbay.com/blog/best-godot-mcp-server/)
+- [The best AI for Godot: 28 models on 15 Godot 4 tasks](https://flockbay.com/blog/best-ai-for-godot/)
