@@ -1,0 +1,24 @@
+{
+  "server": "coding-solo",
+  "serverLabel": "godot-mcp (Coding-Solo)",
+  "task": "read-errors",
+  "model": "claude-sonnet-5-5",
+  "day": "2026-10-25",
+  "pass": true,
+  "problem": null,
+  "seconds": 13,
+  "toolCalls": 6,
+  "serverToolCalls": 3,
+  "tools": [
+    "ToolSearch",
+    "mcp__coding-solo__run_project",
+    "Bash",
+    "PowerShell",
+    "mcp__coding-solo__get_debug_output",
+    "mcp__coding-solo__stop_project"
+  ],
+  "turns": 7,
+  "exit": 0,
+  "reply": "The game printed this runtime error:\n\n```\nSCRIPT ERROR: Invalid call. Nonexistent function 'set_meta' in base 'Nil'.\n   at: spawn_wave (res://main.gd:13)\n```\n\n- **Script and line:** `res://main.gd`, line 13, in `spawn_wave`.\n- **Call chain:** `_ready` (`main.gd:8`) calls `spawn_wave` (`main.gd:13`).\n- **Cause:** line 13 calls `set_meta` on a value that is `null`. The debugger stopped there with \"Debugger Break\".\n\nI hit the error right after launch rather than waiting a full three seconds, and then stopped the game. I didn't change any files.",
+  "engine": null
+}

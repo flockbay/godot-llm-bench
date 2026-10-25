@@ -1,0 +1,23 @@
+{
+  "server": "coding-solo",
+  "serverLabel": "godot-mcp (Coding-Solo)",
+  "task": "scene-edit",
+  "model": "claude-sonnet-5-5",
+  "day": "2026-10-25",
+  "pass": true,
+  "problem": null,
+  "seconds": 28,
+  "toolCalls": 5,
+  "serverToolCalls": 1,
+  "tools": [
+    "ToolSearch",
+    "Read",
+    "mcp__coding-solo__add_node",
+    "Read",
+    "Edit"
+  ],
+  "turns": 6,
+  "exit": 0,
+  "reply": "`main.tscn` now has a `ScoreLabel` Label as a direct child of `Main`, with text \"Score: 0\" and position (16, 16). I haven't opened it in Godot to confirm the position loads as (16, 16).\n\nThe `add_node` tool added the label and saved the scene, but it dropped the position. I added `offset_left = 16.0` and `offset_top = 16.0` to the file by hand. Godot stores a Control's position as offsets, so these should read back as (16, 16). I left out `offset_right` and `offset_bottom`, so the label sizes itself to its text when loaded.\n\nI created no other files.",
+  "engine": "4.7.2.stable.mono.official.ed1daf0bf"
+}

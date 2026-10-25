@@ -94,6 +94,10 @@ New results and new tasks are welcome as pull requests. A new task needs a
 prompt, a check that prints `BENCH PASS` or `BENCH FAIL`, and a reference
 answer that passes `validate`.
 
+## Godot MCP servers
+
+[mcp-bakeoff/](mcp-bakeoff/) runs the same three tasks through four Godot MCP servers on Claude Code with no shell, judged the same way. All four passed all three on 25 October 2026.
+
 ## About
 
 Made by [Flockbay](https://flockbay.com), a free AI game maker built on Godot,

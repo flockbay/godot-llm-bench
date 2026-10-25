@@ -1,0 +1,41 @@
+[
+  {
+    "id": "scene-edit",
+    "title": "Add a node to a scene and save it",
+    "prompt": "This folder is a Godot 4 project. In res://main.tscn, add a Label node named ScoreLabel as a direct child of the root node Main, with its text \"Score: 0\" and its position (16, 16). Save the scene so the change is on disk. Use your Godot tools where they help, and create no other files.",
+    "files": {
+      "main.tscn": "[gd_scene format=3]\n\n[node name=\"Main\" type=\"Node2D\"]\n"
+    },
+    "reference": {
+      "main.tscn": "[gd_scene format=3]\n\n[node name=\"Main\" type=\"Node2D\"]\n\n[node name=\"ScoreLabel\" type=\"Label\" parent=\".\"]\noffset_left = 16.0\noffset_top = 16.0\noffset_right = 80.0\noffset_bottom = 39.0\ntext = \"Score: 0\"\n"
+    },
+    "check": "extends Node\n\nfunc _ready() -> void:\n\tvar packed = load(\"res://main.tscn\")\n\tif packed == null:\n\t\tprint(\"BENCH FAIL: main.tscn does not load\")\n\telse:\n\t\tvar main = packed.instantiate()\n\t\tvar label = main.get_node_or_null(\"ScoreLabel\")\n\t\tif label == null:\n\t\t\tprint(\"BENCH FAIL: no ScoreLabel under Main\")\n\t\telif not label is Label:\n\t\t\tprint(\"BENCH FAIL: ScoreLabel is a %s, not a Label\" % label.get_class())\n\t\telif label.text != \"Score: 0\":\n\t\t\tprint(\"BENCH FAIL: ScoreLabel text is %s\" % label.text)\n\t\telif label.position.distance_to(Vector2(16, 16)) > 0.5:\n\t\t\tprint(\"BENCH FAIL: ScoreLabel is at %s\" % label.position)\n\t\telse:\n\t\t\tprint(\"BENCH PASS\")\n\t\tmain.free()\n\tget_tree().quit()\n",
+    "judged": "The check scene prints BENCH PASS, run headless at 60 fps on Godot 4.7.2."
+  },
+  {
+    "id": "fix-and-run",
+    "title": "Run the game, read its errors, fix the script, run it again",
+    "prompt": "This Godot 4 project fails when its game runs. Run it, read the errors, and fix res://player.gd so the CharacterBody2D player moves right at 200 pixels per second while the input action \"ui_right\" is held, and stands still otherwise. Then run the game again and say whether it now runs without errors.",
+    "files": {
+      "main.tscn": "[gd_scene load_steps=2 format=3]\n\n[ext_resource type=\"Script\" path=\"res://player.gd\" id=\"1\"]\n\n[node name=\"Main\" type=\"Node2D\"]\n\n[node name=\"Player\" type=\"CharacterBody2D\" parent=\".\"]\nscript = ExtResource(\"1\")\n",
+      "player.gd": "extends KinematicBody2D\n\nvar velocity = Vector2()\n\nfunc _physics_process(delta):\n\tif Input.is_action_pressed(\"ui_right\"):\n\t\tvelocity.x = 200\n\telse:\n\t\tvelocity.x = 0\n\tvelocity = move_and_slide(velocity, Vector2.UP)\n"
+    },
+    "reference": {
+      "player.gd": "extends CharacterBody2D\n\nconst SPEED := 200.0\n\nfunc _physics_process(_delta: float) -> void:\n\tvelocity.x = SPEED if Input.is_action_pressed(\"ui_right\") else 0.0\n\tmove_and_slide()\n"
+    },
+    "check": "extends Node\n\nfunc _ready() -> void:\n\tvar script = load(\"res://player.gd\")\n\tif script == null:\n\t\t_done(\"player.gd did not load\")\n\t\treturn\n\tvar body := CharacterBody2D.new()\n\tbody.set_script(script)\n\tadd_child(body)\n\tInput.action_press(\"ui_right\")\n\tfor i in 30:\n\t\tawait get_tree().physics_frame\n\tInput.action_release(\"ui_right\")\n\tvar moved: float = body.position.x\n\tfor i in 10:\n\t\tawait get_tree().physics_frame\n\tif moved < 90.0 or moved > 110.0:\n\t\t_done(\"after 0.5 s holding ui_right x is %.1f, expected about 100\" % moved)\n\telif absf(body.position.x - moved) > 1.0:\n\t\t_done(\"kept moving after ui_right was released\")\n\telse:\n\t\t_done(\"\")\n\nfunc _done(problem: String) -> void:\n\tprint(\"BENCH PASS\" if problem == \"\" else \"BENCH FAIL: \" + problem)\n\tget_tree().quit()\n",
+    "judged": "The check scene prints BENCH PASS, run headless at 60 fps on Godot 4.7.2."
+  },
+  {
+    "id": "read-errors",
+    "title": "Run the game and report its runtime error, changing nothing",
+    "prompt": "Run this Godot 4 project's game for about three seconds and tell me the exact runtime error it prints, with the script file and line number. Do not change any file.",
+    "files": {
+      "main.tscn": "[gd_scene load_steps=2 format=3]\n\n[ext_resource type=\"Script\" path=\"res://main.gd\" id=\"1\"]\n\n[node name=\"Main\" type=\"Node\"]\nscript = ExtResource(\"1\")\n",
+      "main.gd": "extends Node\n\nvar enemies := {}\n\n\nfunc _ready() -> void:\n\tawait get_tree().create_timer(1.0).timeout\n\tspawn_wave()\n\n\nfunc spawn_wave() -> void:\n\tvar boss = enemies.get(\"boss\")\n\tboss.set_meta(\"hp\", 100)\n"
+    },
+    "reference": null,
+    "check": null,
+    "judged": "The final answer names main.gd, line 13 and a Nil (null) base, and no .gd or .tscn file changed."
+  }
+]
